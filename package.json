@@ -6,7 +6,8 @@
   "scripts": {
     "start": "NODE_ENV=production node ./src/server.js",
     "dev": "nodemon ./src/server.js",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "migrate": "node-pg-migrate"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,11 @@
   "homepage": "https://github.com/edwintantawi/dicoding__BFABE-OpenMusic-API#readme",
   "dependencies": {
     "@hapi/hapi": "^20.2.0",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "joi": "^17.4.2",
+    "nanoid": "^3.1.28",
+    "node-pg-migrate": "^6.0.0",
+    "pg": "^8.7.1"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
