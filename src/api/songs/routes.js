@@ -12,7 +12,7 @@ const songRoutes = (handler) => [
   {
     path: '/songs/{id}',
     method: 'GET',
-    handler: () => {},
+    handler: handler.getSongByIdHandler,
   },
   {
     path: '/songs/{id}',

@@ -7,7 +7,7 @@ class SongsHandler {
 
     this.postSongHandler = this.postSongHandler.bind(this);
     this.getSongsHandler = this.getSongsHandler.bind(this);
-    // this.getSongByIdHandler = this.getSongByIdHandler.bind(this);
+    this.getSongByIdHandler = this.getSongByIdHandler.bind(this);
     // this.putSongByIdHandler = this.putSongByIdHandler.bind(this);
     // this.deleteSongByIdHandler = this.deleteSongByIdHandler.bind(this);
   }
@@ -27,7 +27,7 @@ class SongsHandler {
 
       const response = h.response({
         status: 'success',
-        message: 'Lagu berhasil ditambahkan',
+        message: 'Song added successfully',
         data: { songId },
       });
       response.code(201);
@@ -60,7 +60,36 @@ class SongsHandler {
     };
   }
 
-  // getSongByIdHandler(id) {}
+  async getSongByIdHandler(request, h) {
+    try {
+      const { id } = request.params;
+
+      const song = await this._service.getSongById(id);
+
+      return {
+        status: 'success',
+        data: { song },
+      };
+    } catch (error) {
+      console.log(error);
+      if (error instanceof ClinetError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // server error
+      const response = h.response({
+        status: 'error',
+        message: 'Server Error',
+      });
+      response.code(500);
+      return response;
+    }
+  }
 
   // putSongByIdHandler(id, { title, year, performer, genre, duration }) {}
 
