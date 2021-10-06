@@ -70,7 +70,18 @@ class SongsService {
     }
   }
 
-  // async deleteSongById(id) {}
+  async deleteSongById(id) {
+    const query = {
+      text: 'DELETE FROM songs WHERE id = $1 RETURNING id',
+      values: [id],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rows.length) {
+      throw new NotFoundError('Fail to delete, Song with that id not found');
+    }
+  }
 }
 
 module.exports = { SongsService };

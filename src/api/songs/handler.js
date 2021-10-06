@@ -9,7 +9,7 @@ class SongsHandler {
     this.getSongsHandler = this.getSongsHandler.bind(this);
     this.getSongByIdHandler = this.getSongByIdHandler.bind(this);
     this.putSongByIdHandler = this.putSongByIdHandler.bind(this);
-    // this.deleteSongByIdHandler = this.deleteSongByIdHandler.bind(this);
+    this.deleteSongByIdHandler = this.deleteSongByIdHandler.bind(this);
   }
 
   async postSongHandler(request, h) {
@@ -121,7 +121,35 @@ class SongsHandler {
     }
   }
 
-  // deleteSongByIdHandler(id) {}
+  async deleteSongByIdHandler(request, h) {
+    try {
+      const { id } = request.params;
+
+      await this._service.deleteSongById(id);
+
+      return {
+        status: 'success',
+        message: 'The song has been successfully deleted',
+      };
+    } catch (error) {
+      if (error instanceof ClinetError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // server error
+      const response = h.response({
+        status: 'error',
+        message: 'Server Error',
+      });
+      response.code(500);
+      return response;
+    }
+  }
 }
 
 module.exports = { SongsHandler };
