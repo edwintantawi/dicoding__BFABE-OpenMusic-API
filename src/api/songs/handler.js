@@ -71,7 +71,6 @@ class SongsHandler {
         data: { song },
       };
     } catch (error) {
-      console.log(error);
       if (error instanceof ClinetError) {
         const response = h.response({
           status: 'fail',
