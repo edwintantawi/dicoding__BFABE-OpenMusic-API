@@ -8,7 +8,7 @@ class SongsHandler {
     this.postSongHandler = this.postSongHandler.bind(this);
     this.getSongsHandler = this.getSongsHandler.bind(this);
     this.getSongByIdHandler = this.getSongByIdHandler.bind(this);
-    // this.putSongByIdHandler = this.putSongByIdHandler.bind(this);
+    this.putSongByIdHandler = this.putSongByIdHandler.bind(this);
     // this.deleteSongByIdHandler = this.deleteSongByIdHandler.bind(this);
   }
 
@@ -90,7 +90,36 @@ class SongsHandler {
     }
   }
 
-  // putSongByIdHandler(id, { title, year, performer, genre, duration }) {}
+  async putSongByIdHandler(request, h) {
+    try {
+      const { id } = request.params;
+      await this._validator.validateSongPayload(request.payload);
+
+      await this._service.editSongById(id, request.payload);
+
+      return {
+        status: 'success',
+        message: 'The song has been successfully updated',
+      };
+    } catch (error) {
+      if (error instanceof ClinetError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // server error
+      const response = h.response({
+        status: 'error',
+        message: 'Server Error',
+      });
+      response.code(500);
+      return response;
+    }
+  }
 
   // deleteSongByIdHandler(id) {}
 }

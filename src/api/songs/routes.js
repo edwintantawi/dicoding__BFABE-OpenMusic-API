@@ -17,7 +17,7 @@ const songRoutes = (handler) => [
   {
     path: '/songs/{id}',
     method: 'PUT',
-    handler: () => {},
+    handler: handler.putSongByIdHandler,
   },
   {
     path: '/songs/{id}',
