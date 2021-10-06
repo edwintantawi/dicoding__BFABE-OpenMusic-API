@@ -13,43 +13,24 @@ class SongsHandler {
   }
 
   async postSongHandler(request, h) {
-    try {
-      this._validator.validateSongPayload(request.payload);
-      const { title, year, performer, genre, duration } = request.payload;
+    this._validator.validateSongPayload(request.payload);
+    const { title, year, performer, genre, duration } = request.payload;
 
-      const songId = await this._service.addSong({
-        title,
-        year,
-        performer,
-        genre,
-        duration,
-      });
+    const songId = await this._service.addSong({
+      title,
+      year,
+      performer,
+      genre,
+      duration,
+    });
 
-      const response = h.response({
-        status: 'success',
-        message: 'Song added successfully',
-        data: { songId },
-      });
-      response.code(201);
-      return response;
-    } catch (error) {
-      if (error instanceof ClinetError) {
-        const response = h.response({
-          status: 'fail',
-          message: error.message,
-        });
-        response.code(error.statusCode);
-        return response;
-      }
-
-      // server error
-      const response = h.response({
-        status: 'error',
-        message: 'Server Error',
-      });
-      response.code(500);
-      return response;
-    }
+    const response = h.response({
+      status: 'success',
+      message: 'Song added successfully',
+      data: { songId },
+    });
+    response.code(201);
+    return response;
   }
 
   async getSongsHandler() {
@@ -61,94 +42,37 @@ class SongsHandler {
   }
 
   async getSongByIdHandler(request, h) {
-    try {
-      const { id } = request.params;
+    const { id } = request.params;
 
-      const song = await this._service.getSongById(id);
+    const song = await this._service.getSongById(id);
 
-      return {
-        status: 'success',
-        data: { song },
-      };
-    } catch (error) {
-      if (error instanceof ClinetError) {
-        const response = h.response({
-          status: 'fail',
-          message: error.message,
-        });
-        response.code(error.statusCode);
-        return response;
-      }
-
-      // server error
-      const response = h.response({
-        status: 'error',
-        message: 'Server Error',
-      });
-      response.code(500);
-      return response;
-    }
+    return {
+      status: 'success',
+      data: { song },
+    };
   }
 
   async putSongByIdHandler(request, h) {
-    try {
-      const { id } = request.params;
-      await this._validator.validateSongPayload(request.payload);
+    const { id } = request.params;
+    await this._validator.validateSongPayload(request.payload);
 
-      await this._service.editSongById(id, request.payload);
+    await this._service.editSongById(id, request.payload);
 
-      return {
-        status: 'success',
-        message: 'The song has been successfully updated',
-      };
-    } catch (error) {
-      if (error instanceof ClinetError) {
-        const response = h.response({
-          status: 'fail',
-          message: error.message,
-        });
-        response.code(error.statusCode);
-        return response;
-      }
-
-      // server error
-      const response = h.response({
-        status: 'error',
-        message: 'Server Error',
-      });
-      response.code(500);
-      return response;
-    }
+    return {
+      status: 'success',
+      message: 'The song has been successfully updated',
+    };
   }
 
   async deleteSongByIdHandler(request, h) {
-    try {
-      const { id } = request.params;
+    const { id } = request.params;
 
-      await this._service.deleteSongById(id);
+    await this._service.deleteSongById(id);
 
-      return {
-        status: 'success',
-        message: 'The song has been successfully deleted',
-      };
-    } catch (error) {
-      if (error instanceof ClinetError) {
-        const response = h.response({
-          status: 'fail',
-          message: error.message,
-        });
-        response.code(error.statusCode);
-        return response;
-      }
-
-      // server error
-      const response = h.response({
-        status: 'error',
-        message: 'Server Error',
-      });
-      response.code(500);
-      return response;
-    }
+    return {
+      status: 'success',
+      message: 'The song has been successfully deleted',
+    };
   }
 }
 
