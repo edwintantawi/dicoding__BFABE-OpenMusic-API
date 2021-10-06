@@ -1,5 +1,3 @@
-const { ClinetError } = require('../../exceptions/ClientError');
-
 class SongsHandler {
   constructor(service, validator) {
     this._service = service;
@@ -41,7 +39,7 @@ class SongsHandler {
     };
   }
 
-  async getSongByIdHandler(request, h) {
+  async getSongByIdHandler(request) {
     const { id } = request.params;
 
     const song = await this._service.getSongById(id);
@@ -52,7 +50,7 @@ class SongsHandler {
     };
   }
 
-  async putSongByIdHandler(request, h) {
+  async putSongByIdHandler(request) {
     const { id } = request.params;
     await this._validator.validateSongPayload(request.payload);
 
@@ -64,7 +62,7 @@ class SongsHandler {
     };
   }
 
-  async deleteSongByIdHandler(request, h) {
+  async deleteSongByIdHandler(request) {
     const { id } = request.params;
 
     await this._service.deleteSongById(id);
