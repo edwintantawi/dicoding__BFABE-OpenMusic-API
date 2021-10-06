@@ -8,21 +8,21 @@ const { songsValidator } = require('./validator/songs');
 const init = async () => {
   // services
   const songsService = new SongsService();
-  // extensions
-  const extensions = new Extensions();
 
+  // server
   const server = Hapi.server({
     port: SERVER_CONFIG.PORT,
     host: SERVER_CONFIG.HOST,
     routes: { cors: { origin: ['*'] } },
   });
 
+  // plugins
   await server.register({
     plugin: songsPlugin,
     options: { service: songsService, validator: songsValidator },
   });
-
-  server.ext('onPreResponse', extensions.onPreResponse);
+  // extensions
+  server.ext('onPreResponse', Extensions.onPreResponse);
 
   await server.start();
   console.info(`Server run at ${server.info.uri}`);

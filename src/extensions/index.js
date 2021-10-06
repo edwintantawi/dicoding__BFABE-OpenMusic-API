@@ -1,7 +1,7 @@
 const { ClinetError } = require('../exceptions/ClientError');
 
 class Extensions {
-  onPreResponse(request, h) {
+  static onPreResponse(request, h) {
     const { response } = request;
 
     // client error
