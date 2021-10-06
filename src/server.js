@@ -1,7 +1,7 @@
 const Hapi = require('@hapi/hapi');
 const { songsPlugin } = require('./api/songs');
+const { extensionsPlugin } = require('./api/extensions');
 const { SERVER_CONFIG } = require('./config');
-const { Extensions } = require('./extensions');
 const { SongsService } = require('./services/postgres/SongsService');
 const { songsValidator } = require('./validator/songs');
 
@@ -17,12 +17,15 @@ const init = async () => {
   });
 
   // plugins
-  await server.register({
-    plugin: songsPlugin,
-    options: { service: songsService, validator: songsValidator },
-  });
-  // extensions
-  server.ext('onPreResponse', Extensions.onPreResponse);
+  await server.register([
+    {
+      plugin: songsPlugin,
+      options: { service: songsService, validator: songsValidator },
+    },
+    {
+      plugin: extensionsPlugin,
+    },
+  ]);
 
   await server.start();
   console.info(`Server run at ${server.info.uri}`);
