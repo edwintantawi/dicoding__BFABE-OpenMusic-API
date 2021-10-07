@@ -1,12 +1,12 @@
 /* eslint-disable class-methods-use-this */
-const { ClinetError } = require('../../exceptions/ClientError');
+const { ClientError } = require('../../exceptions/ClientError');
 
 class ExtensionsHandler {
   onPreResponseHandler(request, h) {
     const { response } = request;
 
     // client error
-    if (response instanceof ClinetError) {
+    if (response instanceof ClientError) {
       const newResponse = h.response({
         status: 'fail',
         message: response.message,
