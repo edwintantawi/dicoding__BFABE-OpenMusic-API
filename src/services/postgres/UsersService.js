@@ -1,5 +1,6 @@
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
+const bcrypt = require('bcrypt');
 const { InvariantError } = require('../../exceptions/InvariantError');
 
 class UsersService {
@@ -8,13 +9,15 @@ class UsersService {
   }
 
   async addUser({ username, password, fullname }) {
+    await this.verifyNewUsername(username);
+
     const id = `user-${nanoid(16)}`;
+    const securePassword = await bcrypt.hash(password, 10);
     const query = {
       text: 'INSERT INTO users VALUES ($1, $2, $3, $4) RETURNING id',
-      values: [id, username, password, fullname],
+      values: [id, username, securePassword, fullname],
     };
 
-    await this.verifyNewUsername(username);
     const result = await this._pool.query(query);
 
     if (!result.rows[0].id) throw new InvariantError('User failed to add');
