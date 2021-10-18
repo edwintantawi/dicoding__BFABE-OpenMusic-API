@@ -1,13 +1,25 @@
 const Hapi = require('@hapi/hapi');
-const { songsPlugin } = require('./api/songs');
-const { extensionsPlugin } = require('./api/extensions');
+
+// configuration
 const { SERVER_CONFIG } = require('./config');
-const { SongsService } = require('./services/postgres/SongsService');
+
+// songs
+const { songsPlugin } = require('./api/songs');
 const { songsValidator } = require('./validator/songs');
+const { SongsService } = require('./services/postgres/SongsService');
+
+// users
+const { usersPlugin } = require('./api/users');
+const { usersValidator } = require('./validator/users');
+const { UsersService } = require('./services/postgres/UsersService');
+
+// extensions
+const { extensionsPlugin } = require('./api/extensions');
 
 const init = async () => {
   // services
   const songsService = new SongsService();
+  const usersService = new UsersService();
 
   // server
   const server = Hapi.server({
@@ -21,6 +33,10 @@ const init = async () => {
     {
       plugin: songsPlugin,
       options: { service: songsService, validator: songsValidator },
+    },
+    {
+      plugin: usersPlugin,
+      options: { service: usersService, validator: usersValidator },
     },
     {
       plugin: extensionsPlugin,
