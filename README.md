@@ -1,244 +1,519 @@
-# dicoding__BFABE-OpenMusic-API
+# dicoding\_\_BFABE-OpenMusic-API
+
 Dicoding academy | Belajar Fundamental Aplikasi Back-End | Submission | OpenMusic API
 
-## Kriteria OpenMusic API versi 1
-Terdapat 7 kriteria utama yang harus Anda penuhi dalam membuat proyek OpenMusic API versi 1.
+## Kriteria OpenMusic API versi 2
 
-### Kriteria 1 : API dapat menyimpan lagu
-API yang Anda buat harus dapat menyimpan lagu melalui route:
+Terdapat 13 kriteria utama yang harus Anda penuhi dalam membuat proyek OpenMusic API.
 
-Method : POST\
-URL : /songs\
+### Kriteria 1 : Terdapat fitur registrasi pengguna (Menambahkan user)
+
+API yang Anda buat harus dapat menambahkan user melalui route:
+
+Method : POST
+URL : /users
 Body Request:
 
-```javascript
+```json
 {
-    "title": string,
-    "year": number,
-    "performer": string,
-    "genre": string,
-    "duration": number
+  "username": string,
+  "password": string,
+  "fullname": string
 }
 ```
 
-Objek lagu yang disimpan pada server harus memiliki struktur seperti contoh di bawah ini:
+Objek user yang disimpan pada server harus memiliki struktur seperti contoh di bawah ini:
 
-```javascript
+```json
 {
-    "id": "song-Qbax5Oy7L8WKf74l",
-    "title": "Kenangan Mantan",
-    "year": 2021,
-    "performer": "Dicoding",
-    "genre": "Indie",
-    "duration": 120,
-    "insertedAt": "2021-03-04T09:11:44.598Z",
-    "updatedAt": "2021-03-04T09:11:44.598Z"
+  "id": "user-Qbax5Oy7L8WKf74l",
+  "username": "dicoding",
+  "password": "encryptedpassword",
+  "fullname": "Dicoding Indonesia"
 }
 ```
 
-Properti yang ditebalkan diolah dan didapatkan di sisi server. Berikut penjelasannya:
+Ketentuan:
 
-**id** : nilai id haruslah unik. Untuk membuat nilai unik, Anda bisa memanfaatkan nanoid.\
-**insertedAt** : merupakan properti yang menampung tanggal dimasukkannya lagu. Anda bisa gunakan new Date().toISOString() untuk menghasilkan nilainya.\
-**updatedAt** : merupakan properti yang menampung tanggal diperbarui lagu. Ketika lagu baru dimasukkan, berikan nilai properti ini sama dengan insertedAt.
-
-
+Username harus unik.
 Response yang harus dikembalikan:
-
-Status Code: 201\
+Status Code: 201
 Response Body:
 
-```javascript
+```json
 {
-    "status": "success",
-    "message": "Lagu berhasil ditambahkan",
-    "data": {
-        "songId": "song-Qbax5Oy7L8WKf74l"
-    }
+  "status": "success",
+  "message": "User berhasil ditambahkan",
+  "data": {
+    "userId": "user-Qbax5Oy7L8WKf74l"
+  }
 }
 ```
 
+### Kriteria 2 : Terdapat fitur login pengguna (menambahkan authentication)
 
-### Kriteria 2 : API dapat menampilkan seluruh lagu
-APi yang Anda buat harus dapat menampilkan seluruh lagu yang disimpan melalui route:
+API yang Anda buat harus tersedia fitur login user melalui route:
 
-Method: GET\
-URL: /songs
-
-Response yang harus dikembalikan:
-
-Status Code: 200\
-Response Body:
-
-```javascript
-{
-    "status": "success",
-    "data": {
-        "songs": [
-            {
-                "id": "song-Qbax5Oy7L8WKf74l",
-                "title": "Kenangan Mantan",
-                "performer": "Dicoding"
-            },
-            {
-                "id": "song-poax5Oy7L8WKllqw",
-                "title": "Kau Terindah",
-                "performer": "Dicoding"
-            },
-            {
-                "id": "song-Qalokam7L8WKf74l",
-                "title": "Tulus Padamu",
-                "performer": "Dicoding"
-            }
-        ]
-    }
-}
-```
-
-Jika belum terdapat lagu yang dimasukkan, server bisa merespons dengan array songs kosong.
-
-```javascript
-{
-    "status": "success",
-    "data": {
-        "songs": []
-    }
-}
-```
-
-
-### Kriteria 3 : API dapat menampilkan detail lagu
-API yang Anda buat harus dapat menampilkan seluruh lagu yang disimpan melalui route:
-
-Method: GET\
-URL: /songs/{songId}
-
-Response yang harus dikembalikan:
-
-Status Code: 200\
-Response Body:
-
-```javascript
-{
-    "status": "success",
-    "data": {
-        "song": {
-            "id": "song-Qbax5Oy7L8WKf74l",
-            "title": "Kenangan Mantan",
-            "year": 2021,
-            "performer": "Dicoding",
-            "genre": "Indie",
-            "duration": 120,
-            "insertedAt": "2021-03-05T06:14:28.930Z",
-            "updatedAt": "2021-03-05T06:14:30.718Z"
-        }
-    }
-}
-```
-
-
-### Kriteria 4 : API dapat mengubah data lagu
-API yang Anda buat harus dapat mengubah data lagu berdasarkan id melalui route:
-
-Method: PUT\
-URL: /songs/{songId}\
+Method : POST
+URL : /authentications
 Body Request:
 
-```javascript
+```json
 {
-    "title": string,
-    "year": number,
-    "performer": string,
-    "genre": string,
-    "duration": number
+  "username": string,
+  "password": string
 }
 ```
 
-Response yang dikembalikan:
+Ketentuan:
 
-Status code: 200\
+Authentication menggunakan JWT token.
+JWT token harus mengandung payload berisi userId yang merupakan id dari user autentik.
+Nilai secret key token JWT baik access token ataupun refresh token wajib menggunakan environment variable ACCESS_TOKEN_KEY dan REFRESH_TOKEN_KEY.
+
+Response yang harus dikembalikan:
+
+Status Code: 201
 Response Body:
 
-```javascript
+```json
 {
-    "status": "success",
-    "message": "lagu berhasil diperbarui"
+  "status": "success",
+  "message": "Authentication berhasil ditambahkan",
+  "data": {
+    "accessToken": "jwt.access.token",
+    "refreshToken": "jwt.refresh.token"
+  }
 }
 ```
 
+### Kriteria 3 : Terdapat fitur refresh access token (memperbarui authentication)
 
-### Kriteria 5 : API dapat menghapus data lagu
-API yang Anda buat harus dapat mengubah data lagu berdasarkan id melalui route:
+API yang Anda buat harus tersedia fitur Refresh Access Token user melalui route:
 
-Method : DELETE\
-URL : /songs/{songId}
+Method : PUT
+URL : /authentications
+Body Request:
 
-Bila lagu berhasil diperbarui, server harus mengembalikan respons dengan:
+```json
+{
+  "refreshToken": "jwt.refresh.token"
+}
+```
 
-Status Code : 200\
+Ketentuan:
+
+Refresh token memiliki signature yang benar serta terdaftar di database.
+Response yang harus dikembalikan:
+
+Status Code: 200
 Response Body:
 
-```javascript
+```json
 {
-    "status": "success",
-    "message": "lagu berhasil dihapus"
+  "status": "success",
+  "message": "Authentication berhasil diperbarui",
+  "data": {
+    "accessToken": "jwt.access.token"
+  }
 }
-
 ```
 
-### Kriteria 6 : Menerapkan Data Validation
+### Kriteria 4 : Terdapat fitur logout pengguna (menghapus authentication)
+
+API yang Anda buat harus tersedia fitur logout user melalui route:
+
+Method : DELETE
+URL : /authentications
+Body Request:
+
+```json
+{
+  "refreshToken": "jwt.refresh.token"
+}
+```
+
+Ketentuan:
+
+Refresh token terdaftar di database.
+
+Response yang harus dikembalikan:
+
+Status Code: 200
+Response Body:
+
+```json
+{
+  "status": "success",
+  "message": "Refresh token berhasil dihapus"
+}
+```
+
+### Kriteria 5 : Terdapat fitur menambahkan playlist
+
+API yang Anda buat harus tersedia fitur menambahkan playlist melalui route:
+
+Method : POST
+URL : /playlists
+Body Request:
+
+```json
+{
+"name": string
+}
+```
+
+Objek user yang disimpan pada server harus memiliki struktur seperti contoh di bawah ini:
+
+```json
+{
+  "id": "playlist-Qbax5Oy7L8WKf74l",
+  "name": "Lagu Indie Hits Indonesia",
+  "owner": "user-Qbax5Oy7L8WKf74l"
+}
+```
+
+Ketentuan:
+
+Playlist merupakan resource yang dibatasi (restrict). Untuk mengaksesnya membutuhkan access token.
+Properti owner merupakan user id dari pembuat playlist. Anda bisa mendapatkan nilainya melalui artifacts payload JWT.
+
+Response yang harus dikembalikan:
+
+Status Code: 201
+Response Body:
+
+```json
+{
+  "status": "success",
+  "message": "Playlist berhasil ditambahkan",
+  "data": {
+    "playlistId": "playlist-Qbax5Oy7L8WKf74l"
+  }
+}
+```
+
+### Kriteria 6 : Terdapat fitur melihat daftar playlist yang dimiliki
+
+API yang Anda buat harus tersedia fitur melihat daftar playlist yang dimiliki pengguna melalui route:
+
+Method : GET
+URL : /playlists
+Response yang harus dikembalikan:
+
+Status Code: 200
+Response Body:
+
+```json
+{
+  "status": "success",
+  "data": {
+    "playlists": [
+      {
+        "id": "playlist-Qbax5Oy7L8WKf74l",
+        "name": "Lagu Indie Hits Indonesia",
+        "username": "dicoding"
+      },
+      {
+        "id": "playlist-lmA4PkM3LseKlkmn",
+        "name": "Lagu Untuk Membaca",
+        "username": "dicoding"
+      }
+    ]
+  }
+}
+```
+
+Ketentuan:
+
+Playlist yang muncul hanya yang ia miliki saja.
+
+### Kriteria 7 : Terdapat fitur menghapus playlist
+
+API yang Anda buat harus tersedia fitur menghapus playlist melalui route:
+
+Method : DELETE
+URL : /playlists/{playlistId}
+
+Ketentuan:
+
+Hanya owner playlist yang dapat menghapus playlist.
+
+Response yang harus dikembalikan:
+
+Status Code: 200
+Response Body:
+
+```json
+{
+  "status": "success",
+  "message": "Playlist berhasil dihapus"
+}
+```
+
+### Kriteria 8 : Terdapat fitur menambahkan lagu ke playlist
+
+API yang Anda buat harus tersedia fitur menambahkan lagu ke playlist melalui route:
+
+Method : POST
+URL : /playlists/{playlistId}/songs
+Body Request:
+
+```json
+{
+"songId": string
+}
+```
+
+Ketentuan:
+
+Hanya owner playlist (atau kolabolator) yang dapat menambahkan lagu ke playlist.
+songId wajib bernilai id lagu yang valid.
+
+Response yang harus dikembalikan:
+
+Status Code: 201
+Response Body:
+
+```json
+{
+  "status": "success",
+  "message": "Lagu berhasil ditambahkan ke playlist"
+}
+```
+
+### Kriteria 9 : Terdapat fitur melihat daftar lagu pada playlist
+
+API yang Anda buat harus tersedia fitur melihat daftar lagu pada playlist melalui route:
+
+Method : GET
+URL : /playlists/{playlistId}/songs
+Ketentuan:
+
+Hanya owner (dan kolabolator) playlist yang dapat melihat daftar lagu pada playlist.
+
+Response yang harus dikembalikan:
+
+Status Code: 200
+Response Body:
+
+```json
+{
+  "status": "success",
+  "data": {
+    "songs": [
+      {
+        "id": "song-Qbax5Oy7L8WKf74l",
+        "title": "Kenangan Mantan",
+        "performer": "Dicoding"
+      },
+      {
+        "id": "song-poax5Oy7L8WKllqw",
+        "title": "Kau Terindah",
+        "performer": "Dicoding"
+      }
+    ]
+  }
+}
+```
+
+### Kriteria 10 : Terdapat fitur menghapus lagu dari playlist
+
+API yang Anda buat harus tersedia fitur menghapus lagu dari playlist melalui route:
+
+Method : DELETE
+URL : /playlists/{playlistId}/songs
+Body Request:
+
+```json
+{
+"songId": string
+}
+```
+
+Ketentuan:
+
+Hanya owner playlist (atau kolabolator) yang dapat menghapus lagu dari playlist.
+songId wajib bernilai id lagu yang valid.
+
+Response yang harus dikembalikan:
+
+Status Code: 200
+Response Body:
+
+```json
+{
+  "status": "success",
+  "message": "Lagu berhasil dihapus dari playlist"
+}
+```
+
+### Kriteria 11 : Menerapkan Data Validation
+
 Wajib menerapkan proses Data Validation pada Request Payload sesuai spesifikasi berikut:
 
-**POST /songs.**\
-title : string, required.\
-year : number, required.\
-performer : string, required.\
-genre : string.\
-duration: number.
+1. **POST /users:**
 
-**PUT /songs.**\
-title : string, required.\
-year : number, required.\
-performer : string, required.\
-genre : string.\
-duration: number.
+- username : string, required.
+- password : string, required.
+- fullname : string, required.
 
-### Kriteria 7 : Penanganan Eror (Error Handling)
-Ketika proses validasi data pada request payload tidak sesuai (gagal), server harus mengembalikan response:
-```
+2. **POST /authentications:**
+
+- username : string, required.
+- password : string, required.
+
+3. **PUT /authentications:**
+
+- refreshToken : string, required.
+
+4. **DELETE /authentications:**
+
+- refreshToken : string, required.
+
+5. **POST /playlists:**
+
+- name : string, required.
+
+6. **POST /playlists/{playlistId}/songs**
+
+- songId : string, required.
+
+### Kriteria 12 : Penanganan Eror (Error Handling)
+
+**Ketika proses validasi data pada request payload tidak sesuai (gagal), server harus mengembalikan response:**
 status code: 400 (Bad Request)
 response body:
 status: fail
-message: <apa pun selama tidak kosong>
-```
+message: `<apa pun selama tidak kosong>`
 
-Ketika pengguna mengakses resource yang tidak ditemukan, server harus mengembalikan response:
-```
+**Ketika pengguna mengakses resource yang tidak ditemukan, server harus mengembalikan response:**
 status code: 404 (Not Found)
 response body:
 status: fail
-message: <apa pun selama tidak kosong>
-```
+message: `<apa pun selama tidak kosong>`
 
-Ketika terjadi server eror, server harus mengembalikan response:
-```
+**Ketika pengguna mengakses resource yang dibatasi tanpa access token, server harus mengembalikan response:**
+status code: 401 (Unauthorized)
+response body:
+status: fail
+message: `<apa pun selama tidak kosong>`
+
+**Ketika pengguna memperbarui access token menggunakan refresh token yang tidak valid, server harus mengembalikan response:**
+status code: 400 (Bad Request)
+response body:
+status: fail
+message: `<apa pun selama tidak kosong>`
+
+**Ketika pengguna mengakses resource yang bukan haknya, server harus mengembalikan response:**
+status code: 403 (Forbidden)
+response body:
+status: fail
+message: `<apa pun selama tidak kosong>`
+
+**Ketika terjadi server eror, server harus mengembalikan response:**
 status code: 500 (Internal Server Error)
 Response body:
 status: error
-Message: <apa pun selama tidak kosong>
+message: `<apa pun selama tidak kosong>`
+
+### Kriteria 13 : Pertahankan Fitur OpenMusic API versi 1
+
+Pastikan fitur dan kriteria OpenMusic API versi 1 tetap dipertahankan seperti:
+
+- API dapat menyimpan lagu
+- API dapat menampilkan seluruh lagu
+- API dapat menampilkan detail lagu
+- API dapat mengubah data lagu
+- API dapat menghapus data lagu
+- Menerapkan Data validations pada POST /songs dan PUT /songs
+
+## Kriteria Opsional OpenMusic API versi 2
+
+Selain kriteria utama, terdapat kriteria opsional yang yang dapat Anda penuhi agar mendapat nilai yang baik.
+
+- Memiliki fitur menambahkan kolaborator pada playlist
+- Terdapat fitur menambahkan kolaborator pada playlist melalui route:
+
+Method: POST
+URL: /collaborations
+Body Request:
+
+```json
+{
+"playlistId": string,
+"userId": string,
+}
 ```
 
+Objek collaboration yang disimpan pada server memiliki struktur seperti contoh di bawah ini:
 
+```json
+{
+  "id": "collab-Qbax5Oy7L8WKf74l",
+  "playlistId": "playlist-Qbax5Oy7L8WKf74l",
+  "userId": "user-Qbax5Oy7L8WKf74l"
+}
+```
 
-### Kriteria 8 : Menggunakan Database dalam Menyimpan Data lagu
-Data lagu harus disimpan di dalam database menggunakan PostgreSQL agar ketika di-restart data tidak akan hilang.\
-Wajib menggunakan teknik migrations dalam mengelola struktur tabel pada database.\
-Wajib menyimpan nilai host, post, maupun kredensial dalam mengakses database pada environment variable dengan ketentuan:
+Ketentuan:
+
+Hanya pemilik playlist yang dapat menambahkan kolaborator.
+
+Response yang harus dikembalikan:
+
+Status Code: 201
+Response Body:
+
+```json
+{
+  "status": "success",
+  "message": "Kolaborasi berhasil ditambahkan",
+  "data": {
+    "collaborationId": "collab-Qbax5Oy7L8WKf74l"
+  }
+}
 ```
-PGUSER : menyimpan nilai user untuk mengakses database.
-PGPASSWORD : menyimpan nilai password dari user database.
-PGDATABASE : menyimpan nilai nama database yang digunakan.
-PGHOST : menyimpan nilai host yang digunakan oleh database.
-PGPORT :  menyimpan nilai port yang digunakan oleh database.
+
+Memiliki fitur menghapus kolaborator dari playlist
+Terdapat fitur menghapus kolaborator pada playlist melalui route:
+
+Method: DELETE
+URL: /collaborations
+Body Request:
+
+```json
+{
+"playlistId": string,
+"userId": string,
+}
 ```
-Wajib menggunakan package dotenv serta berkas .env dalam mengelola environment variable.
+
+Ketentuan:
+
+Hanya pemilik playlist yang dapat menghapus kolaborator.
+
+Response yang harus dikembalikan:
+
+Status Code: 200
+Response Body:
+
+```json
+{
+  "status": "success",
+  "message": "Kolaborasi berhasil dihapus"
+}
+```
+
+### Hak akses kolaborator
+
+Ketika user ditambahkan sebagai kolaborator playlist oleh pemilik playlist. Maka hak akses user tersebut terhadap playlist adalah:
+
+- Playlist tampil pada permintaan GET /playlists.
+- Dapat menambahkan lagu ke dalam playlist.
+- Dapat menghapus lagu dari playlist.
+- Dapat melihat daftar lagu yang ada di playlist.
+
+Referensi Entity Relationship Diagram (ERD) untuk OpenMusic API versi 2
+
+![ERD openMusic v2](https://d17ivq9b7rppb3.cloudfront.net/original/academy/202105241122027a63ac53ae1fc8ffb27562e4a0c73970.jpeg)
