@@ -5,4 +5,9 @@ const SERVER_CONFIG = {
   HOST: process.env.HOST,
 };
 
-module.exports = { SERVER_CONFIG };
+const JWT_CONFIG = {
+  ACCESS_TOKEN_KEY: process.env.ACCESS_TOKEN_KEY,
+  REFRESH_TOKEN_KEY: process.env.REFRESH_TOKEN_KEY,
+};
+
+module.exports = { SERVER_CONFIG, JWT_CONFIG };

@@ -17,6 +17,7 @@ class ExtensionsHandler {
 
     // server error
     if (response instanceof Error) {
+      console.log(response);
       const newResponse = h.response({
         status: 'error',
         message: 'Server error',
