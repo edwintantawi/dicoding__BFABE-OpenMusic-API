@@ -1,7 +1,8 @@
 const Hapi = require('@hapi/hapi');
+const Jwt = require('@hapi/jwt');
 
 // configuration
-const { SERVER_CONFIG } = require('./config');
+const { SERVER_CONFIG, JWT_CONFIG } = require('./config');
 
 // songs
 const { songsPlugin } = require('./api/songs');
@@ -20,6 +21,11 @@ const {
   AuthenticationsService,
 } = require('./services/postgres/AuthenticationsService');
 
+// playlists
+const { playlistsPlugin } = require('./api/playlists');
+const { PlaylistsValidator } = require('./validator/playlists');
+const { PlaylistsService } = require('./services/postgres/PlaylistsService');
+
 // extensions
 const { extensionsPlugin } = require('./api/extensions');
 const { TokenManager } = require('./tokenize/TokenManager');
@@ -29,6 +35,7 @@ const init = async () => {
   const songsService = new SongsService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
+  const playlistsService = new PlaylistsService();
 
   // server
   const server = Hapi.server({
@@ -37,7 +44,13 @@ const init = async () => {
     routes: { cors: { origin: ['*'] } },
   });
 
-  // plugins
+  // Jwt plugins
+  await server.register([{ plugin: Jwt }]);
+
+  // auth strategy
+  server.auth.strategy('openmusic_jwt', 'jwt', JWT_CONFIG.AUTH_STRATEGY);
+
+  // custom plugin
   await server.register([
     {
       plugin: songsPlugin,
@@ -57,8 +70,10 @@ const init = async () => {
       },
     },
     {
-      plugin: extensionsPlugin,
+      plugin: playlistsPlugin,
+      options: { service: playlistsService, validator: PlaylistsValidator },
     },
+    { plugin: extensionsPlugin },
   ]);
 
   await server.start();
