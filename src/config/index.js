@@ -14,7 +14,9 @@ const SERVER_CONFIG = {
 const JWT_CONFIG = {
   ACCESS_TOKEN_KEY: getEnv('ACCESS_TOKEN_KEY'),
   REFRESH_TOKEN_KEY: getEnv('REFRESH_TOKEN_KEY'),
-  AUTH_STRATEGY: {
+  AUTH_STRATEGY_NAME: 'openmusic_jwt',
+  AUTH_STRATEGY_SCHEME: 'jwt',
+  AUTH_STRATEGY_OPTIONS: {
     keys: getEnv('ACCESS_TOKEN_KEY'),
     verify: {
       aud: false,

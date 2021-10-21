@@ -48,7 +48,11 @@ const init = async () => {
   await server.register([{ plugin: Jwt }]);
 
   // auth strategy
-  server.auth.strategy('openmusic_jwt', 'jwt', JWT_CONFIG.AUTH_STRATEGY);
+  server.auth.strategy(
+    JWT_CONFIG.AUTH_STRATEGY_NAME,
+    JWT_CONFIG.AUTH_STRATEGY_SCHEME,
+    JWT_CONFIG.AUTH_STRATEGY_OPTIONS
+  );
 
   // custom plugin
   await server.register([
