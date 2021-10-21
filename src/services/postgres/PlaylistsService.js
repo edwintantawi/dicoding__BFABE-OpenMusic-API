@@ -1,6 +1,7 @@
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 const { InvariantError } = require('../../exceptions/InvariantError');
+const { NotFoundError } = require('../../exceptions/NotFoundError');
 
 class PlaylistsService {
   constructor() {
@@ -19,6 +20,35 @@ class PlaylistsService {
     if (!result.rows[0].id) throw new InvariantError('Playlist failed to add');
 
     return result.rows[0].id;
+  }
+
+  async getPlaylists(ownerId) {
+    const query = {
+      text: `SELECT playlists.id, playlists.name, users.username
+              FROM playlists
+              LEFT JOIN users ON users.id = playlists.owner
+              WHERE playlists.owner = $1`,
+      values: [ownerId],
+    };
+
+    const result = await this._pool.query(query);
+
+    return result.rows;
+  }
+
+  async deletePlaylist(playlistId) {
+    const query = {
+      text: 'DELETE FROM playlists WHERE id = $1 RETURNING id',
+      values: [playlistId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError(
+        'Playlist failed to delete, playlist id not found'
+      );
+    }
   }
 }
 
