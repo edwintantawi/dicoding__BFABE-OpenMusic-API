@@ -15,7 +15,9 @@ class UsersService {
     const id = `user-${nanoid(16)}`;
     const securePassword = await bcrypt.hash(password, 10);
     const query = {
-      text: 'INSERT INTO users VALUES ($1, $2, $3, $4) RETURNING id',
+      text: `INSERT INTO users
+              VALUES ($1, $2, $3, $4)
+              RETURNING id`,
       values: [id, username, securePassword, fullname],
     };
 
@@ -28,7 +30,9 @@ class UsersService {
 
   async verifyNewUsername(username) {
     const query = {
-      text: 'SELECT username FROM users WHERE username = $1',
+      text: `SELECT username
+              FROM users
+              WHERE username = $1`,
       values: [username],
     };
 
@@ -41,7 +45,9 @@ class UsersService {
 
   async verifyUserCredential(username, password) {
     const query = {
-      text: 'SELECT id, password FROM users WHERE username = $1',
+      text: `SELECT id, password
+              FROM users
+              WHERE username = $1`,
       values: [username],
     };
 

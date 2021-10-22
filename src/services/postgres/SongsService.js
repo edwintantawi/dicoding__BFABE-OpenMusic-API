@@ -49,7 +49,11 @@ class SongsService {
 
   async getSongsByPlaylist(playlistId) {
     const query = {
-      text: 'SELECT songs.id, songs.title, songs.performer FROM songs LEFT JOIN playlistsongs ON playlistsongs.song_id = songs.id WHERE playlistsongs.playlist_id = $1',
+      text: `SELECT songs.id, songs.title, songs.performer
+              FROM songs
+              LEFT JOIN playlistsongs
+              ON playlistsongs.song_id = songs.id
+              WHERE playlistsongs.playlist_id = $1`,
       values: [playlistId],
     };
 
@@ -60,26 +64,35 @@ class SongsService {
 
   async editSongById(id, { title, year, performer, genre, duration }) {
     const query = {
-      text: `UPDATE songs SET title = $1, year = $2, performer = $3, genre = $4, duration = $5 WHERE id = $6 RETURNING id`,
+      text: `UPDATE songs
+              SET title = $1,
+                year = $2,
+                performer = $3,
+                genre = $4,
+                duration = $5
+              WHERE id = $6
+              RETURNING id`,
       values: [title, year, performer, genre, duration, id],
     };
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundError('Fail to update, Song with that id not found');
     }
   }
 
   async deleteSongById(id) {
     const query = {
-      text: 'DELETE FROM songs WHERE id = $1 RETURNING id',
+      text: `DELETE FROM songs
+              WHERE id = $1
+              RETURNING id`,
       values: [id],
     };
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundError('Fail to delete, Song with that id not found');
     }
   }
