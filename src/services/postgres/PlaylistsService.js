@@ -39,7 +39,7 @@ class PlaylistsService {
     return result.rows;
   }
 
-  async deletePlaylist(playlistId) {
+  async deletePlaylistById(playlistId) {
     const query = {
       text: `DELETE FROM playlists
               WHERE id = $1

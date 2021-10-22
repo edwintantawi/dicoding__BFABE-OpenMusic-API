@@ -14,7 +14,9 @@ class SongsService {
     const insertedAt = new Date().toISOString();
 
     const query = {
-      text: 'INSERT INTO songs VALUES ($1, $2, $3, $4, $5, $6, $7, $7) RETURNING id',
+      text: `INSERT INTO songs
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $7)
+              RETURNING id`,
       values: [id, title, year, performer, genre, duration, insertedAt],
     };
 
@@ -26,15 +28,18 @@ class SongsService {
   }
 
   async getSongs() {
-    const result = await this._pool.query(
-      'SELECT id, title, performer FROM songs'
-    );
+    const query = `SELECT id, title, performer
+                    FROM songs`;
+
+    const result = await this._pool.query(query);
     return result.rows;
   }
 
   async getSongById(id) {
     const query = {
-      text: 'SELECT * FROM songs WHERE id = $1',
+      text: `SELECT *
+              FROM songs
+              WHERE id = $1`,
       values: [id],
     };
 
@@ -47,7 +52,7 @@ class SongsService {
     return result.rows.map(mapSongTableToModel)[0];
   }
 
-  async getSongsByPlaylist(playlistId) {
+  async getSongsByPlaylistId(playlistId) {
     const query = {
       text: `SELECT songs.id, songs.title, songs.performer
               FROM songs
