@@ -23,7 +23,7 @@ class UsersService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows[0].id) throw new InvariantError('User failed to add');
+    if (!result.rowCount) throw new InvariantError('User failed to add');
 
     return result.rows[0].id;
   }

@@ -20,7 +20,7 @@ class PlaylistsService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows[0].id) throw new InvariantError('Playlist failed to add');
+    if (!result.rowCount) throw new InvariantError('Playlist failed to add');
 
     return result.rows[0].id;
   }
