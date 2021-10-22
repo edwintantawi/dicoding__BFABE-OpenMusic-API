@@ -2,6 +2,7 @@ const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 const { InvariantError } = require('../../exceptions/InvariantError');
 const { NotFoundError } = require('../../exceptions/NotFoundError');
+const { AuthorizationError } = require('../../exceptions/AuthorizationError');
 
 class PlaylistsService {
   constructor() {
@@ -48,6 +49,25 @@ class PlaylistsService {
       throw new NotFoundError(
         'Playlist failed to delete, playlist id not found'
       );
+    }
+  }
+
+  async verifyPlaylistAccess(playlistId, ownerId) {
+    const query = {
+      text: 'SELECT owner FROM playlists WHERE id = $1',
+      values: [playlistId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Playlist Not Found');
+    }
+
+    const playlist = result.rows[0];
+
+    if (playlist.owner !== ownerId) {
+      throw new AuthorizationError('You have no access to this resource');
     }
   }
 }
