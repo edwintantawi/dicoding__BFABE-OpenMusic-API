@@ -1,6 +1,9 @@
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
 
+// jwt token
+const { TokenManager } = require('./tokenize/TokenManager');
+
 // configuration
 const { SERVER_CONFIG, JWT_CONFIG } = require('./config');
 
@@ -35,7 +38,6 @@ const {
 
 // extensions
 const { extensionsPlugin } = require('./api/extensions');
-const { TokenManager } = require('./tokenize/TokenManager');
 
 const init = async () => {
   // services
