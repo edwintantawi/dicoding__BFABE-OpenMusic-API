@@ -47,6 +47,17 @@ class SongsService {
     return result.rows.map(mapSongTableToModel)[0];
   }
 
+  async getSongsByPlaylist(playlistId) {
+    const query = {
+      text: 'SELECT songs.id, songs.title, songs.performer FROM songs LEFT JOIN playlistsongs ON playlistsongs.song_id = songs.id WHERE playlistsongs.playlist_id = $1',
+      values: [playlistId],
+    };
+
+    const result = await this._pool.query(query);
+
+    return result.rows;
+  }
+
   async editSongById(id, { title, year, performer, genre, duration }) {
     const query = {
       text: `UPDATE songs SET title = $1, year = $2, performer = $3, genre = $4, duration = $5 WHERE id = $6 RETURNING id`,
