@@ -11,6 +11,12 @@ const playlistSongRoutes = (handler, { auth }) => [
     handler: handler.getPlaylistSongsHandler,
     options: { auth },
   },
+  {
+    method: 'DELETE',
+    path: '/playlists/{playlistId}/songs',
+    handler: handler.deletePlaylistSongHandler,
+    options: { auth },
+  },
 ];
 
 module.exports = { playlistSongRoutes };
