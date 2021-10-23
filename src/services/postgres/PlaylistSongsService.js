@@ -34,7 +34,7 @@ class PlaylistSongsService {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new InvariantError('Fail to delete, Song with that id not found');
+      throw new InvariantError('Playlist song failed to delete');
     }
   }
 }
