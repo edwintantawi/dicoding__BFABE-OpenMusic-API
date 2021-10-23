@@ -5,8 +5,9 @@ const { NotFoundError } = require('../../exceptions/NotFoundError');
 const { AuthorizationError } = require('../../exceptions/AuthorizationError');
 
 class PlaylistsService {
-  constructor() {
+  constructor(collaborationsService) {
     this._pool = new Pool();
+    this._collaborationsService = collaborationsService;
   }
 
   async addPlaylist(playlistName, ownerId) {
@@ -29,8 +30,9 @@ class PlaylistsService {
     const query = {
       text: `SELECT playlists.id, playlists.name, users.username
               FROM playlists
+              LEFT JOIN collaborations ON collaborations.playlist_id = playlists.id
               LEFT JOIN users ON users.id = playlists.owner
-              WHERE playlists.owner = $1`,
+              WHERE users.id = $1 OR collaborations.user_id = $1`,
       values: [ownerId],
     };
 
@@ -56,7 +58,7 @@ class PlaylistsService {
     }
   }
 
-  async verifyPlaylistAccess(playlistId, ownerId) {
+  async verifyPlaylistOwner(playlistId, ownerId) {
     const query = {
       text: `SELECT owner
               FROM playlists
@@ -74,6 +76,15 @@ class PlaylistsService {
 
     if (playlist.owner !== ownerId) {
       throw new AuthorizationError('You have no access to this resource');
+    }
+  }
+
+  async verifyPlaylistAccess(playlistId, userId) {
+    try {
+      await this.verifyPlaylistOwner(playlistId, userId);
+    } catch (error) {
+      if (error instanceof NotFoundError) throw error;
+      await this._collaborationsService.verifyCollaborator(playlistId, userId);
     }
   }
 }
