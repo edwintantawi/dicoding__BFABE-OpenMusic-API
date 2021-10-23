@@ -51,7 +51,6 @@ class PlaylistSongsHandler {
     const { id: credentialId } = request.auth.credentials;
 
     await this._playlistsService.verifyPlaylistAccess(playlistId, credentialId);
-    await this._playlistSongsService.getPlaylistSongById(playlistId, songId);
     await this._playlistSongsService.deletePlaylistSongById(playlistId, songId);
 
     return {
