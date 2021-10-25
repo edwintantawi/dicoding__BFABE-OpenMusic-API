@@ -15,11 +15,11 @@ class PlaylistSongsHandler {
     this.deletePlaylistSongHandler = this.deletePlaylistSongHandler.bind(this);
   }
 
-  async postPlaylistSongHandler(request, h) {
-    this._validator.validatePlaylistSongPayload(request.payload);
-    const { songId } = request.payload;
-    const { playlistId } = request.params;
-    const { id: credentialId } = request.auth.credentials;
+  async postPlaylistSongHandler({ payload, auth, params }, h) {
+    this._validator.validatePlaylistSongPayload(payload);
+    const { songId } = payload;
+    const { playlistId } = params;
+    const { id: credentialId } = auth.credentials;
 
     await this._playlistsService.verifyPlaylistAccess(playlistId, credentialId);
     await this._playlistSongsService.addPlaylistSong(songId, playlistId);
@@ -31,9 +31,9 @@ class PlaylistSongsHandler {
     return response;
   }
 
-  async getPlaylistSongsHandler(request) {
-    const { playlistId } = request.params;
-    const { id: credentialId } = request.auth.credentials;
+  async getPlaylistSongsHandler({ auth, params }) {
+    const { playlistId } = params;
+    const { id: credentialId } = auth.credentials;
 
     await this._playlistsService.verifyPlaylistAccess(playlistId, credentialId);
     const songs = await this._songsService.getSongsByPlaylistId(playlistId);
@@ -44,11 +44,11 @@ class PlaylistSongsHandler {
     };
   }
 
-  async deletePlaylistSongHandler(request) {
-    this._validator.validatePlaylistSongPayload(request.payload);
-    const { playlistId } = request.params;
-    const { songId } = request.payload;
-    const { id: credentialId } = request.auth.credentials;
+  async deletePlaylistSongHandler({ payload, auth, params }) {
+    this._validator.validatePlaylistSongPayload(payload);
+    const { playlistId } = params;
+    const { songId } = payload;
+    const { id: credentialId } = auth.credentials;
 
     await this._playlistsService.verifyPlaylistAccess(playlistId, credentialId);
     await this._playlistSongsService.deletePlaylistSong(playlistId, songId);

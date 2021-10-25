@@ -19,11 +19,11 @@ class PlaylistsService {
       values: [id, playlistName, ownerId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows, rowCount } = await this._pool.query(query);
 
-    if (!result.rowCount) throw new InvariantError('Playlist failed to add');
+    if (!rowCount) throw new InvariantError('Playlist failed to add');
 
-    return result.rows[0].id;
+    return rows[0].id;
   }
 
   async getPlaylists(ownerId) {
@@ -36,9 +36,9 @@ class PlaylistsService {
       values: [ownerId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return result.rows;
+    return rows;
   }
 
   async deletePlaylistById(playlistId) {
@@ -49,9 +49,9 @@ class PlaylistsService {
       values: [playlistId],
     };
 
-    const result = await this._pool.query(query);
+    const { rowCount } = await this._pool.query(query);
 
-    if (!result.rowCount) {
+    if (!rowCount) {
       throw new NotFoundError(
         'Playlist failed to delete, playlist id not found'
       );
@@ -66,13 +66,13 @@ class PlaylistsService {
       values: [playlistId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows, rowCount } = await this._pool.query(query);
 
-    if (!result.rowCount) {
+    if (!rowCount) {
       throw new NotFoundError('Playlist Not Found');
     }
 
-    const playlist = result.rows[0];
+    const playlist = rows[0];
 
     if (playlist.owner !== ownerId) {
       throw new AuthorizationError('You have no access to this resource');

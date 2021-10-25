@@ -21,11 +21,11 @@ class UsersService {
       values: [id, username, securePassword, fullname],
     };
 
-    const result = await this._pool.query(query);
+    const { rows, rowCount } = await this._pool.query(query);
 
-    if (!result.rowCount) throw new InvariantError('User failed to add');
+    if (!rowCount) throw new InvariantError('User failed to add');
 
-    return result.rows[0].id;
+    return rows[0].id;
   }
 
   async verifyNewUsername(username) {
@@ -36,9 +36,9 @@ class UsersService {
       values: [username],
     };
 
-    const result = await this._pool.query(query);
+    const { rowCount } = await this._pool.query(query);
 
-    if (result.rowCount) {
+    if (rowCount) {
       throw new InvariantError('Fail to add user, Username is already exist');
     }
   }
@@ -51,15 +51,15 @@ class UsersService {
       values: [username],
     };
 
-    const user = await this._pool.query(query);
+    const { rows, rowCount } = await this._pool.query(query);
 
-    if (!user.rowCount) {
+    if (!rowCount) {
       throw new AuthenticationError(
         'The credentials you provided are wrong, user not found'
       );
     }
 
-    const { id, password: securePassword } = user.rows[0];
+    const { id, password: securePassword } = rows[0];
 
     const isMatchPassword = await bcrypt.compare(password, securePassword);
 

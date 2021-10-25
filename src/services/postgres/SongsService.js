@@ -11,28 +11,27 @@ class SongsService {
 
   async addSong({ title, year, performer, genre, duration }) {
     const id = `song-${nanoid(16)}`;
-    const insertedAt = new Date().toISOString();
 
     const query = {
       text: `INSERT INTO songs
-              VALUES ($1, $2, $3, $4, $5, $6, $7, $7)
+              VALUES ($1, $2, $3, $4, $5, $6)
               RETURNING id`,
-      values: [id, title, year, performer, genre, duration, insertedAt],
+      values: [id, title, year, performer, genre, duration],
     };
 
-    const result = await this._pool.query(query);
+    const { rows, rowCount } = await this._pool.query(query);
 
-    if (!result.rowCount) throw new InvariantError('Song failed to add');
+    if (!rowCount) throw new InvariantError('Song failed to add');
 
-    return result.rows[0].id;
+    return rows[0].id;
   }
 
   async getSongs() {
     const query = `SELECT id, title, performer
                     FROM songs`;
 
-    const result = await this._pool.query(query);
-    return result.rows;
+    const { rows } = await this._pool.query(query);
+    return rows;
   }
 
   async getSongById(id) {
@@ -43,13 +42,13 @@ class SongsService {
       values: [id],
     };
 
-    const result = await this._pool.query(query);
+    const { rows, rowCount } = await this._pool.query(query);
 
-    if (!result.rowCount) {
+    if (!rowCount) {
       throw new NotFoundError('Song with that id not found');
     }
 
-    return result.rows.map(mapSongTableToModel)[0];
+    return rows.map(mapSongTableToModel)[0];
   }
 
   async getSongsByPlaylistId(playlistId) {
@@ -62,27 +61,30 @@ class SongsService {
       values: [playlistId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return result.rows;
+    return rows;
   }
 
   async editSongById(id, { title, year, performer, genre, duration }) {
+    const updatedAt = new Date().toISOString();
+
     const query = {
       text: `UPDATE songs
               SET title = $1,
                 year = $2,
                 performer = $3,
                 genre = $4,
-                duration = $5
-              WHERE id = $6
+                duration = $5,
+                updated_at = $6
+              WHERE id = $7
               RETURNING id`,
-      values: [title, year, performer, genre, duration, id],
+      values: [title, year, performer, genre, duration, updatedAt, id],
     };
 
-    const result = await this._pool.query(query);
+    const { rowCount } = await this._pool.query(query);
 
-    if (!result.rowCount) {
+    if (!rowCount) {
       throw new NotFoundError('Fail to update, Song with that id not found');
     }
   }
@@ -95,9 +97,9 @@ class SongsService {
       values: [id],
     };
 
-    const result = await this._pool.query(query);
+    const { rowCount } = await this._pool.query(query);
 
-    if (!result.rowCount) {
+    if (!rowCount) {
       throw new NotFoundError('Fail to delete, Song with that id not found');
     }
   }
