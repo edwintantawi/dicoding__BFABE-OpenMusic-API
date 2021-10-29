@@ -16,10 +16,7 @@ class ExportsHandler {
 
     await this._playlistsService.verifyPlaylistAccess(playlistId, credentialId);
 
-    const message = {
-      userId: credentialId,
-      targetEmail,
-    };
+    const message = { playlistId, targetEmail };
 
     await this._exportsService.sendMessage(
       'export:playlist-songs',
