@@ -31,4 +31,8 @@ const JWT_CONFIG = {
   },
 };
 
-module.exports = { getEnv, SERVER_CONFIG, JWT_CONFIG };
+const RABBITMQ_CONFIG = {
+  RABBITMQ_SERVER: getEnv('RABBITMQ_SERVER'),
+};
+
+module.exports = { getEnv, SERVER_CONFIG, JWT_CONFIG, RABBITMQ_CONFIG };
