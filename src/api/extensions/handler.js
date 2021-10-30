@@ -4,26 +4,15 @@ const { ClientError } = require('../../exceptions/ClientError');
 class ExtensionsHandler {
   onPreResponseHandler(request, h) {
     const { response } = request;
+    const hapiErrorPayload = response?.output?.payload;
 
-    const authenticationsError = response?.output?.payload;
-
-    if (authenticationsError?.error === 'Unauthorized') {
-      // authentication error
+    // client error or hapi error
+    if (response instanceof ClientError || hapiErrorPayload) {
       const newResponse = h.response({
         status: 'fail',
-        message: authenticationsError.message,
+        message: response.message || hapiErrorPayload?.message,
       });
-      newResponse.code(authenticationsError.statusCode);
-      return newResponse;
-    }
-
-    if (response instanceof ClientError) {
-      // client error
-      const newResponse = h.response({
-        status: 'fail',
-        message: response.message,
-      });
-      newResponse.code(response.statusCode);
+      newResponse.code(response.statusCode || hapiErrorPayload?.statusCode);
       return newResponse;
     }
 
