@@ -10,6 +10,7 @@ const uploadRoutes = (handler) => [
         allow: 'multipart/form-data',
         multipart: true,
         output: 'stream',
+        maxBytes: 500000,
       },
     },
   },
