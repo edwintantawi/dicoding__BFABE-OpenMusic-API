@@ -1,5 +1,7 @@
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const Inert = require('@hapi/inert');
+const path = require('path');
 
 // jwt token
 const { TokenManager } = require('./tokenize/TokenManager');
@@ -48,10 +50,18 @@ const { exportsPlugin } = require('./api/exports');
 const { ExportsValidator } = require('./validator/exports');
 const { ProducerService } = require('./services/rabbitmq/ProducerService');
 
+// uploads
+const { uploadsPlugin } = require('./api/uploads');
+const { UploadsValidator } = require('./validator/uploads');
+const { StorageService } = require('./services/storage/StorageService');
+
 // extensions
 const { extensionsPlugin } = require('./api/extensions');
 
 const init = async () => {
+  // path
+  const storagePath = path.resolve(__dirname, 'api/uploads/file/pictures');
+
   // services
   const collaborationsService = new CollaborationsService();
   const songsService = new SongsService();
@@ -59,6 +69,7 @@ const init = async () => {
   const authenticationsService = new AuthenticationsService();
   const playlistsService = new PlaylistsService(collaborationsService);
   const playlistSongsService = new PlaylistSongsService();
+  const storageService = new StorageService(storagePath);
 
   // server
   const server = Hapi.server({
@@ -67,8 +78,8 @@ const init = async () => {
     routes: { cors: { origin: ['*'] } },
   });
 
-  // Jwt plugins
-  await server.register([{ plugin: Jwt }]);
+  // hapi plugins
+  await server.register([{ plugin: Jwt }, { plugin: Inert }]);
 
   // auth strategy
   server.auth.strategy(
@@ -123,6 +134,13 @@ const init = async () => {
         exportsService: ProducerService,
         playlistsService,
         validator: ExportsValidator,
+      },
+    },
+    {
+      plugin: uploadsPlugin,
+      options: {
+        service: storageService,
+        validator: UploadsValidator,
       },
     },
     { plugin: extensionsPlugin },
