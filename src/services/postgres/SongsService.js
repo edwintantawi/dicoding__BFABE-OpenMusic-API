@@ -5,8 +5,9 @@ const { NotFoundError } = require('../../exceptions/NotFoundError');
 const { mapSongTableToModel } = require('../../utils');
 
 class SongsService {
-  constructor() {
+  constructor(cacheService) {
     this._pool = new Pool();
+    this._cacheService = cacheService;
   }
 
   async addSong({ title, year, performer, genre, duration }) {
@@ -52,18 +53,30 @@ class SongsService {
   }
 
   async getSongsByPlaylistId(playlistId) {
-    const query = {
-      text: `SELECT songs.id, songs.title, songs.performer
+    try {
+      const result = await this._cacheService.get(
+        `playlist-songs:${playlistId}`
+      );
+      return JSON.parse(result);
+    } catch (error) {
+      const query = {
+        text: `SELECT songs.id, songs.title, songs.performer
               FROM songs
               LEFT JOIN playlistsongs
               ON playlistsongs.song_id = songs.id
               WHERE playlistsongs.playlist_id = $1`,
-      values: [playlistId],
-    };
+        values: [playlistId],
+      };
 
-    const { rows } = await this._pool.query(query);
+      const { rows } = await this._pool.query(query);
 
-    return rows;
+      await this._cacheService.set(
+        `playlist-songs:${playlistId}`,
+        JSON.stringify(rows)
+      );
+
+      return rows;
+    }
   }
 
   async editSongById(id, { title, year, performer, genre, duration }) {

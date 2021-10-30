@@ -3,8 +3,9 @@ const { Pool } = require('pg');
 const { InvariantError } = require('../../exceptions/InvariantError');
 
 class PlaylistSongsService {
-  constructor() {
+  constructor(cacheService) {
     this._pool = new Pool();
+    this._cacheService = cacheService;
   }
 
   async addPlaylistSong(songId, playlistId) {
@@ -21,6 +22,8 @@ class PlaylistSongsService {
     if (!rowCount) {
       throw new InvariantError('Song playlist failed to add');
     }
+
+    await this._cacheService.delete(`playlist-songs:${playlistId}`);
   }
 
   async deletePlaylistSong(playlistId, songId) {
@@ -36,6 +39,8 @@ class PlaylistSongsService {
     if (!rowCount) {
       throw new InvariantError('Playlist song failed to delete');
     }
+
+    await this._cacheService.delete(`playlist-songs:${playlistId}`);
   }
 }
 

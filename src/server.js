@@ -55,6 +55,9 @@ const { uploadsPlugin } = require('./api/uploads');
 const { UploadsValidator } = require('./validator/uploads');
 const { StorageService } = require('./services/storage/StorageService');
 
+// redis cache
+const { CacheService } = require('./services/redis/CacheService');
+
 // extensions
 const { extensionsPlugin } = require('./api/extensions');
 
@@ -63,12 +66,13 @@ const init = async () => {
   const storagePath = path.resolve(__dirname, 'api/uploads/file/pictures');
 
   // services
+  const cacheService = new CacheService();
   const collaborationsService = new CollaborationsService();
-  const songsService = new SongsService();
+  const songsService = new SongsService(cacheService);
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
   const playlistsService = new PlaylistsService(collaborationsService);
-  const playlistSongsService = new PlaylistSongsService();
+  const playlistSongsService = new PlaylistSongsService(cacheService);
   const storageService = new StorageService(storagePath);
 
   // server
